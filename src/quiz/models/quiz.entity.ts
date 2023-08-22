@@ -15,7 +15,7 @@ export class Quiz {
   @Field()
   quizName: string;
 
-  @OneToMany(() => Question, (question) => question.quiz)
-  @Field(() => Question)
-  questions: [Question];
+  @OneToMany(() => Question, (question) => question.quiz, { cascade: true })
+  @Field(() => [Question])
+  questions: Question[];
 }

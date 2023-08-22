@@ -34,7 +34,13 @@ export class Question {
   @Field(() => Quiz)
   quiz: Quiz;
 
-  @OneToMany(() => QuestionOption, (questionOption) => questionOption.question)
-  @Field(() => QuestionOption)
-  options: [QuestionOption];
+  @OneToMany(
+    () => QuestionOption,
+    (questionOption) => questionOption.question,
+    {
+      cascade: true,
+    },
+  )
+  @Field(() => [QuestionOption])
+  options: QuestionOption[];
 }
