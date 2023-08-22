@@ -11,5 +11,5 @@ export class QuestionDto {
   questionType: QuestionType;
 
   @Field(() => [QuestionOptionDto])
-  options: [QuestionOptionDto];
+  options: QuestionOptionDto[];
 }
