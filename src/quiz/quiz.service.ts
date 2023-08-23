@@ -25,7 +25,13 @@ export class QuizService {
   }
 
   async findQuizByName(quizName: string): Promise<Quiz> {
-    const quiz = await this.quizRepository.findOneBy({ quizName: quizName });
+    const quiz = await this.quizRepository
+      .createQueryBuilder('quiz')
+      .innerJoinAndSelect('quiz.questions', 'question')
+      .innerJoinAndSelect('question.options', 'option')
+      .where('quiz.quizName = :quizName', { quizName })
+      .getOne();
+
     if (!quiz) {
       throw new Error('No quiz found with given name.');
     }
