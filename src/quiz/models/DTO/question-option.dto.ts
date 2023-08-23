@@ -5,6 +5,6 @@ export class QuestionOptionDto {
   @Field()
   option: string;
 
-  @Field({ nullable: true })
-  isCorrect?: boolean;
+  @Field({ defaultValue: false })
+  isCorrect: boolean;
 }
