@@ -12,6 +12,11 @@ export class QuizResolver {
     return this.quizService.findAll();
   }
 
+  @Query(() => Quiz)
+  async quiz(@Args('quizName') quizName: string) {
+    return this.quizService.findQuizByName(quizName);
+  }
+
   @Mutation(() => Quiz)
   async createQuiz(
     @Args('createQuizInput') createQuizInput: CreateQuizInput,

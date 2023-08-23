@@ -24,6 +24,14 @@ export class QuizService {
       .getMany();
   }
 
+  async findQuizByName(quizName: string): Promise<Quiz> {
+    const quiz = await this.quizRepository.findOneBy({ quizName: quizName });
+    if (!quiz) {
+      throw new Error('No quiz found with given name.');
+    }
+    return quiz;
+  }
+
   async createQuiz(createQuizInput: CreateQuizInput): Promise<Quiz> {
     try {
       return this.entityManager.transaction(async (transactionManager) => {
