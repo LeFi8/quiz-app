@@ -1,6 +1,7 @@
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QuizService } from './quiz.service';
 import { Quiz } from './models/quiz.entity';
+import { CreateQuizInput } from './models/DTO/create-quiz.input';
 
 @Resolver()
 export class QuizResolver {
@@ -9,5 +10,12 @@ export class QuizResolver {
   @Query(() => [Quiz])
   async quizzes(): Promise<Quiz[]> {
     return this.quizService.findAll();
+  }
+
+  @Mutation(() => Quiz)
+  async createQuiz(
+    @Args('createQuizInput') createQuizInput: CreateQuizInput,
+  ): Promise<Quiz> {
+    return this.quizService.createQuiz(createQuizInput);
   }
 }
