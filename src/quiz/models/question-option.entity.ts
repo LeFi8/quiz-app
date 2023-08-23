@@ -13,7 +13,7 @@ export class QuestionOption {
 
   @Column()
   @Field()
-  text: string;
+  option: string;
 
   @Column({ nullable: true })
   @Field()
