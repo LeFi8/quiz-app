@@ -62,31 +62,89 @@ export class QuizService {
     answerInput: AnswerInput,
   ): Promise<QuizSubmissionResults> {
     const quiz = await this.findQuizByName(answerInput.quizName);
+    const quizSubmissionResults = new QuizSubmissionResults();
+    const correctAnswers = this.checkStudentsAnswer(answerInput, quiz);
 
-    const result = this.validateAnswers(answerInput, quiz);
-
-    const results = new QuizSubmissionResults();
-    results.correctAnswers = result;
-    results.totalQuestions = quiz.questions.length;
-    results.score = result / quiz.questions.length;
-    return results;
+    quizSubmissionResults.correctAnswers = correctAnswers;
+    quizSubmissionResults.totalQuestions = quiz.questions.length;
+    quizSubmissionResults.score = correctAnswers / quiz.questions.length;
+    return quizSubmissionResults;
   }
 
-  private validateAnswers(answerInput: AnswerInput, quiz: Quiz): number {
+  private checkStudentsAnswer(answerInput: AnswerInput, quiz: Quiz): number {
     let score = 0;
-    for (let i = 0; i < answerInput.answers.length; i++) {
-      if (
-        quiz.questions[i].questionType === QuestionType.SINGLE_CHOICE_QUESTION
-      ) {
-        const correctOption = quiz.questions[i].options.find(
-          (option) => option.isCorrect,
-        );
-        if (answerInput.answers[i].answer == correctOption.option)
-          score = score + 1;
+
+    for (let i = 0; i < answerInput.questionAnswers.length; i++) {
+      switch (quiz.questions[i].questionType) {
+        case QuestionType.SINGLE_CHOICE_QUESTION:
+          const correctOption = quiz.questions[i].options.find(
+            (option) => option.isCorrect,
+          );
+          if (answerInput.questionAnswers[i].answer == correctOption.option)
+            score = score + 1;
+          break;
+
+        case QuestionType.MULTIPLE_CHOICE_QUESTION:
+          const correctMultipleOptions = quiz.questions[i].options
+            .filter((option) => option.isCorrect)
+            .map((option) => option.option);
+
+          const correctMultipleQA = this.validateAnswer(
+            answerInput.questionAnswers[i].answers,
+            correctMultipleOptions,
+            QuestionType.MULTIPLE_CHOICE_QUESTION,
+          );
+          if (correctMultipleQA) score = score + 1;
+          break;
+
+        case QuestionType.SORTING_QUESTION:
+          const correctOrderAnswers = quiz.questions[i].options.map(
+            (option) => option.option,
+          );
+          const correctSortingQ = this.validateAnswer(
+            answerInput.questionAnswers[i].answers,
+            correctOrderAnswers,
+            QuestionType.SORTING_QUESTION,
+          );
+          if (correctSortingQ) score = score + 1;
+          break;
+
+        case QuestionType.PLAIN_TEXT_QUESTION:
+          const correctPlainAnswer = quiz.questions[i].options[0].option
+            .toLowerCase()
+            .replace(/[.,!"?;:/-]/g, '');
+          const userAnswer = answerInput.questionAnswers[i].answer
+            .toLowerCase()
+            .replace(/[.,!"?;:/-]/g, '');
+
+          if (correctPlainAnswer == userAnswer) score = score + 1;
+          break;
       }
     }
 
     return score;
+  }
+
+  private validateAnswer(
+    userAnswers: string[],
+    correctAnswers: string[],
+    questionType: QuestionType,
+  ): boolean {
+    if (userAnswers.length != correctAnswers.length) {
+      return false;
+    }
+
+    if (questionType === QuestionType.MULTIPLE_CHOICE_QUESTION) {
+      correctAnswers.sort();
+      userAnswers.sort();
+    } // else it's SORTING_QUESTION
+
+    for (let j = 0; j < correctAnswers.length; j++) {
+      if (userAnswers[j] != correctAnswers[j]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   async createQuiz(createQuizInput: CreateQuizInput): Promise<Quiz> {
