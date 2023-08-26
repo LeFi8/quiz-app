@@ -3,6 +3,8 @@ import { QuizService } from './quiz.service';
 import { Quiz } from './models/quiz.entity';
 import { CreateQuizInput } from './models/DTO/create-quiz.input';
 import { Role } from './models/role.enum';
+import { AnswerInput } from './models/DTO/answer.input';
+import { QuizSubmissionResults } from './models/DTO/quiz-submission-results';
 
 @Resolver()
 export class QuizResolver {
@@ -25,5 +27,12 @@ export class QuizResolver {
     @Args('createQuizInput') createQuizInput: CreateQuizInput,
   ): Promise<Quiz> {
     return this.quizService.createQuiz(createQuizInput);
+  }
+
+  @Mutation(() => QuizSubmissionResults)
+  async submitQuizAnswers(
+    @Args('answerInput') answerInput: AnswerInput,
+  ): Promise<QuizSubmissionResults> {
+    return this.quizService.submitQuizAnswers(answerInput);
   }
 }

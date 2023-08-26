@@ -7,6 +7,8 @@ import { Question } from './models/question.entity';
 import { QuestionOption } from './models/question-option.entity';
 import { QuestionType } from './models/question-type.enum';
 import { shuffleArray } from '../utils/utils';
+import { AnswerInput } from './models/DTO/answer.input';
+import { QuizSubmissionResults } from './models/DTO/quiz-submission-results';
 
 @Injectable()
 export class QuizService {
@@ -54,6 +56,37 @@ export class QuizService {
       });
     });
     return quiz;
+  }
+
+  async submitQuizAnswers(
+    answerInput: AnswerInput,
+  ): Promise<QuizSubmissionResults> {
+    const quiz = await this.findQuizByName(answerInput.quizName);
+
+    const result = this.validateAnswers(answerInput, quiz);
+
+    const results = new QuizSubmissionResults();
+    results.correctAnswers = result;
+    results.totalQuestions = quiz.questions.length;
+    results.score = result / quiz.questions.length;
+    return results;
+  }
+
+  private validateAnswers(answerInput: AnswerInput, quiz: Quiz): number {
+    let score = 0;
+    for (let i = 0; i < answerInput.answers.length; i++) {
+      if (
+        quiz.questions[i].questionType === QuestionType.SINGLE_CHOICE_QUESTION
+      ) {
+        const correctOption = quiz.questions[i].options.find(
+          (option) => option.isCorrect,
+        );
+        if (answerInput.answers[i].answer == correctOption.option)
+          score = score + 1;
+      }
+    }
+
+    return score;
   }
 
   async createQuiz(createQuizInput: CreateQuizInput): Promise<Quiz> {

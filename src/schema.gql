@@ -51,7 +51,7 @@ type Query {
 
 type Mutation {
   createQuiz(createQuizInput: CreateQuizInput!): Quiz!
-  submitQuiz(answerInput: AnswerInput!): QuizSubmissionResults!
+  submitQuizAnswers(answerInput: AnswerInput!): QuizSubmissionResults!
 }
 
 input CreateQuizInput {
