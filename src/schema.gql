@@ -5,7 +5,7 @@
 type QuestionOption {
   id: Float!
   option: String!
-  isCorrect: Boolean!
+  isCorrect: Boolean
   question: Question!
 }
 

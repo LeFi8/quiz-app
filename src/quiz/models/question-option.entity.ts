@@ -16,7 +16,7 @@ export class QuestionOption {
   option: string;
 
   @Column({ default: false })
-  @Field()
+  @Field({ nullable: true })
   isCorrect: boolean;
 
   @ManyToOne(() => Question, (question) => question.options)
