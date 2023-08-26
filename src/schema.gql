@@ -38,6 +38,12 @@ type Quiz {
   questions: [Question!]!
 }
 
+type QuizSubmissionResults {
+  correctAnswers: Int!
+  totalQuestions: Int!
+  score: Float!
+}
+
 type Query {
   quizzes: [Quiz!]!
   quiz(quizName: String!, role: String!): Quiz!
@@ -45,6 +51,7 @@ type Query {
 
 type Mutation {
   createQuiz(createQuizInput: CreateQuizInput!): Quiz!
+  submitQuiz(answerInput: AnswerInput!): QuizSubmissionResults!
 }
 
 input CreateQuizInput {
@@ -61,4 +68,15 @@ input QuestionDto {
 input QuestionOptionDto {
   option: String!
   isCorrect: Boolean! = false
+}
+
+input AnswerInput {
+  quizName: String!
+  answers: [AnswerDto!]!
+}
+
+input AnswerDto {
+  question: String!
+  answer: String
+  answers: [String!]
 }
