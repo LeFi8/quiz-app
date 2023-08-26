@@ -7,5 +7,5 @@ export class AnswerInput {
   quizName: string;
 
   @Field(() => [AnswerDto])
-  answers: AnswerDto[];
+  questionAnswers: AnswerDto[];
 }
