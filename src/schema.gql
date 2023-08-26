@@ -72,7 +72,7 @@ input QuestionOptionDto {
 
 input AnswerInput {
   quizName: String!
-  answers: [AnswerDto!]!
+  questionAnswers: [AnswerDto!]!
 }
 
 input AnswerDto {
