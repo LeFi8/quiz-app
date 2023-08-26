@@ -5,6 +5,9 @@ import { EntityManager, Repository } from 'typeorm';
 import { CreateQuizInput } from './models/DTO/create-quiz.input';
 import { Question } from './models/question.entity';
 import { QuestionOption } from './models/question-option.entity';
+import { QuestionType } from './models/question-type.enum';
+import { shuffleArray } from '../utils/utils';
+
 @Injectable()
 export class QuizService {
   constructor(
@@ -31,10 +34,25 @@ export class QuizService {
       .innerJoinAndSelect('question.options', 'option')
       .where('quiz.quizName = :quizName', { quizName })
       .getOne();
-
     if (!quiz) {
       throw new Error('No quiz found with given name.');
     }
+    return quiz;
+  }
+
+  async fetchQuizForAStudent(quizName: string): Promise<Quiz> {
+    const quiz = await this.findQuizByName(quizName);
+
+    quiz.questions.forEach((question) => {
+      if (question.questionType == QuestionType.PLAIN_TEXT_QUESTION)
+        question.options.pop();
+      if (question.questionType == QuestionType.SORTING_QUESTION)
+        shuffleArray(question.options);
+
+      question.options.forEach((option) => {
+        delete option.isCorrect;
+      });
+    });
     return quiz;
   }
 

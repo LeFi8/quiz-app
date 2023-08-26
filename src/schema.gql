@@ -40,7 +40,7 @@ type Quiz {
 
 type Query {
   quizzes: [Quiz!]!
-  quiz(quizName: String!): Quiz!
+  quiz(quizName: String!, role: String!): Quiz!
 }
 
 type Mutation {
