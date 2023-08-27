@@ -39,9 +39,6 @@ describe('QuizService', () => {
     ],
   };
 
-  const mockQuizRepository = {};
-  const mockQuestionsRepository = {};
-  const mockOptionsRepository = {};
   const entityManager = {};
 
   beforeEach(async () => {
@@ -50,15 +47,27 @@ describe('QuizService', () => {
         QuizService,
         {
           provide: getRepositoryToken(Quiz),
-          useValue: mockQuizRepository,
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn(),
+          },
         },
         {
           provide: getRepositoryToken(Question),
-          useValue: mockQuestionsRepository,
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn(),
+          },
         },
         {
           provide: getRepositoryToken(QuestionOption),
-          useValue: mockOptionsRepository,
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn(),
+          },
         },
         {
           provide: EntityManager,
