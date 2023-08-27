@@ -265,5 +265,44 @@ describe('QuizService', () => {
         expect(result).toEqual(correctSubmission);
       },
     );
+
+    it(
+      'should correctly calculate correct answers, total questions ' +
+        'and overall score of the submitted answers to the quiz ' +
+        'for plain text question',
+      async () => {
+        mockQuiz.questions = [];
+        mockQuiz.questions.push({
+          id: 1,
+          questionType: QuestionType.PLAIN_TEXT_QUESTION,
+          question: 'What app is this?',
+          options: [
+            {
+              id: 6,
+              option: 'quiz app',
+              isCorrect: undefined,
+              question: this,
+            },
+          ],
+          quiz: mockQuiz,
+        });
+
+        jest.spyOn(quizService, 'findQuizByName').mockResolvedValue(mockQuiz);
+
+        const mockAnswerInput = {
+          quizName: mockQuiz.quizName,
+          questionAnswers: [
+            {
+              question: 'What app is this?',
+              answer: 'Quiz App!',
+              answers: undefined,
+            },
+          ],
+        };
+
+        const result = await quizService.submitQuizAnswers(mockAnswerInput);
+        expect(result).toEqual(correctSubmission);
+      },
+    );
   });
 });
