@@ -194,9 +194,7 @@ describe('QuizService', () => {
         'and overall score of the submitted answers to the quiz ' +
         'for single choice question',
       async () => {
-        jest
-          .spyOn(quizService, 'submitQuizAnswers')
-          .mockResolvedValue(correctSubmission);
+        jest.spyOn(quizService, 'findQuizByName').mockResolvedValue(mockQuiz);
 
         const mockAnswerInput = {
           quizName: mockQuiz.quizName,
@@ -219,6 +217,7 @@ describe('QuizService', () => {
         'and overall score of the submitted answers to the quiz ' +
         'for multi choice question',
       async () => {
+        mockQuiz.questions = [];
         mockQuiz.questions.push({
           id: 1,
           questionType: QuestionType.MULTIPLE_CHOICE_QUESTION,
@@ -240,20 +239,15 @@ describe('QuizService', () => {
           quiz: mockQuiz,
         });
 
-        jest
-          .spyOn(quizService, 'submitQuizAnswers')
-          .mockResolvedValue(correctSubmission);
+        jest.spyOn(quizService, 'findQuizByName').mockResolvedValue(mockQuiz);
 
         const mockAnswerInput = {
           quizName: mockQuiz.quizName,
           questionAnswers: [
             {
-              question: mockQuiz.questions[1].question,
+              question: 'Choose both',
               answer: undefined,
-              answers: [
-                mockQuiz.questions[1].options[0].option,
-                mockQuiz.questions[1].options[1].option,
-              ],
+              answers: ['yes', 'true'],
             },
           ],
         };
