@@ -15,28 +15,28 @@ describe('QuizService', () => {
   const mockQuiz: Quiz = {
     id: 0,
     quizName: 'Jest Quiz',
-    questions: [],
-  };
-
-  const mockQuestion = {
-    id: 0,
-    questionType: QuestionType.SINGLE_CHOICE_QUESTION,
-    question: 'Is this a Quiz App?',
-    options: [],
-    quiz: mockQuiz,
-  };
-
-  const mockOption1: QuestionOption = {
-    id: 0,
-    option: 'Yes',
-    isCorrect: true,
-    question: mockQuestion,
-  };
-  const mockOption2: QuestionOption = {
-    id: 1,
-    option: 'No',
-    isCorrect: false,
-    question: mockQuestion,
+    questions: [
+      {
+        id: 0,
+        questionType: QuestionType.SINGLE_CHOICE_QUESTION,
+        question: 'Is this a Quiz App?',
+        options: [
+          {
+            id: 0,
+            option: 'Yes',
+            isCorrect: true,
+            question: this,
+          },
+          {
+            id: 1,
+            option: 'No',
+            isCorrect: false,
+            question: this,
+          },
+        ],
+        quiz: this,
+      },
+    ],
   };
 
   const mockQuizRepository = {};
@@ -66,10 +66,6 @@ describe('QuizService', () => {
         },
       ],
     }).compile();
-
-    mockQuestion.options.push(mockOption1);
-    mockQuestion.options.push(mockOption2);
-    mockQuiz.questions.push(mockQuestion);
 
     quizService = module.get<QuizService>(QuizService);
     quizRepository = module.get<Repository<Quiz>>(getRepositoryToken(Quiz));
@@ -110,7 +106,12 @@ describe('QuizService', () => {
         'with empty options, question type is plain text question, ',
       async () => {
         const mockQuizPlainTextQuestion = structuredClone(mockQuiz);
-        const mockOptionPlainTextQuestion = structuredClone(mockOption1);
+        const mockOptionPlainTextQuestion = {
+          id: 0,
+          option: 'Yes',
+          isCorrect: true,
+          question: this,
+        };
 
         mockQuizPlainTextQuestion.questions = [];
         mockQuizPlainTextQuestion.questions.push({
@@ -182,15 +183,62 @@ describe('QuizService', () => {
     );
   });
 
+  const correctSubmission = new QuizSubmissionResults();
+  correctSubmission.score = 1;
+  correctSubmission.totalQuestions = 1;
+  correctSubmission.correctAnswers = 1;
+
   describe('submitQuizAnswers', () => {
     it(
       'should correctly calculate correct answers, total questions ' +
-        'and overall score of the submitted answers to the quiz',
+        'and overall score of the submitted answers to the quiz ' +
+        'for single choice question',
       async () => {
-        const correctSubmission = new QuizSubmissionResults();
-        correctSubmission.score = 1;
-        correctSubmission.totalQuestions = 1;
-        correctSubmission.correctAnswers = 1;
+        jest
+          .spyOn(quizService, 'submitQuizAnswers')
+          .mockResolvedValue(correctSubmission);
+
+        const mockAnswerInput = {
+          quizName: mockQuiz.quizName,
+          questionAnswers: [
+            {
+              question: mockQuiz.questions[0].question,
+              answer: mockQuiz.questions[0].options[0].option,
+              answers: [],
+            },
+          ],
+        };
+
+        const result = await quizService.submitQuizAnswers(mockAnswerInput);
+        expect(result).toEqual(correctSubmission);
+      },
+    );
+
+    it(
+      'should correctly calculate correct answers, total questions ' +
+        'and overall score of the submitted answers to the quiz ' +
+        'for multi choice question',
+      async () => {
+        mockQuiz.questions.push({
+          id: 1,
+          questionType: QuestionType.MULTIPLE_CHOICE_QUESTION,
+          question: 'Choose both',
+          options: [
+            {
+              id: 3,
+              option: 'yes',
+              isCorrect: true,
+              question: this,
+            },
+            {
+              id: 4,
+              option: 'true',
+              isCorrect: true,
+              question: this,
+            },
+          ],
+          quiz: mockQuiz,
+        });
 
         jest
           .spyOn(quizService, 'submitQuizAnswers')
@@ -200,9 +248,12 @@ describe('QuizService', () => {
           quizName: mockQuiz.quizName,
           questionAnswers: [
             {
-              question: mockQuestion.question,
-              answer: mockOption1.option,
-              answers: [],
+              question: mockQuiz.questions[1].question,
+              answer: undefined,
+              answers: [
+                mockQuiz.questions[1].options[0].option,
+                mockQuiz.questions[1].options[1].option,
+              ],
             },
           ],
         };
