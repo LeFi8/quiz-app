@@ -6,6 +6,7 @@ import { QuestionOption } from './models/question-option.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Question } from './models/question.entity';
+import { QuizSubmissionResults } from './models/DTO/quiz-submission-results';
 
 describe('QuizService', () => {
   let quizService: QuizService;
@@ -177,6 +178,37 @@ describe('QuizService', () => {
         );
 
         expect(result.questions[0].options).not.toBe(mockQuizSortingQuestion);
+      },
+    );
+  });
+
+  describe('submitQuizAnswers', () => {
+    it(
+      'should correctly calculate correct answers, total questions ' +
+        'and overall score of the submitted answers to the quiz',
+      async () => {
+        const correctSubmission = new QuizSubmissionResults();
+        correctSubmission.score = 1;
+        correctSubmission.totalQuestions = 1;
+        correctSubmission.correctAnswers = 1;
+
+        jest
+          .spyOn(quizService, 'submitQuizAnswers')
+          .mockResolvedValue(correctSubmission);
+
+        const mockAnswerInput = {
+          quizName: mockQuiz.quizName,
+          questionAnswers: [
+            {
+              question: mockQuestion.question,
+              answer: mockOption1.option,
+              answers: [],
+            },
+          ],
+        };
+
+        const result = await quizService.submitQuizAnswers(mockAnswerInput);
+        expect(result).toEqual(correctSubmission);
       },
     );
   });
