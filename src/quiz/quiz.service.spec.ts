@@ -209,9 +209,9 @@ describe('QuizService', () => {
           quizName: mockQuiz.quizName,
           questionAnswers: [
             {
-              question: mockQuiz.questions[0].question,
-              answer: mockQuiz.questions[0].options[0].option,
-              answers: [],
+              question: 'Is this a Quiz App?',
+              answer: 'Yes',
+              answers: undefined,
             },
           ],
         };
@@ -257,6 +257,57 @@ describe('QuizService', () => {
               question: 'Choose both',
               answer: undefined,
               answers: ['yes', 'true'],
+            },
+          ],
+        };
+
+        const result = await quizService.submitQuizAnswers(mockAnswerInput);
+        expect(result).toEqual(correctSubmission);
+      },
+    );
+
+    it(
+      'should correctly calculate correct answers, total questions ' +
+        'and overall score of the submitted answers to the quiz ' +
+        'for sorting question',
+      async () => {
+        mockQuiz.questions = [];
+        mockQuiz.questions.push({
+          id: 2,
+          questionType: QuestionType.SORTING_QUESTION,
+          question: 'Sort in the right order',
+          options: [
+            {
+              id: 5,
+              option: '1',
+              isCorrect: undefined,
+              question: this,
+            },
+            {
+              id: 6,
+              option: '2',
+              isCorrect: undefined,
+              question: this,
+            },
+            {
+              id: 7,
+              option: '3',
+              isCorrect: undefined,
+              question: this,
+            },
+          ],
+          quiz: mockQuiz,
+        });
+
+        jest.spyOn(quizService, 'findQuizByName').mockResolvedValue(mockQuiz);
+
+        const mockAnswerInput = {
+          quizName: 'mockQuiz.quizName',
+          questionAnswers: [
+            {
+              question: 'Sort in right order',
+              answer: undefined,
+              answers: ['1', '2', '3'],
             },
           ],
         };
