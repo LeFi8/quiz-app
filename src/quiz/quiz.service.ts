@@ -111,9 +111,11 @@ export class QuizService {
 
         case QuestionType.PLAIN_TEXT_QUESTION:
           const correctPlainAnswer = quiz.questions[i].options[0].option
+            .trim()
             .toLowerCase()
             .replace(/[.,!"?;:/-]/g, '');
           const userAnswer = answerInput.questionAnswers[i].answer
+            .trim()
             .toLowerCase()
             .replace(/[.,!"?;:/-]/g, '');
 
