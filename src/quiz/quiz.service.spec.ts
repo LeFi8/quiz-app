@@ -3,7 +3,7 @@ import { QuizService } from './quiz.service';
 import { Quiz } from './models/quiz.entity';
 import { QuestionType } from './models/question-type.enum';
 import { QuestionOption } from './models/question-option.entity';
-import { EntityManager, QueryBuilder, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Question } from './models/question.entity';
 import { QuizSubmissionResults } from './models/DTO/quiz-submission-results';
