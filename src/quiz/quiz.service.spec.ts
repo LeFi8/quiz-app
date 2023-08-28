@@ -39,8 +39,6 @@ describe('QuizService', () => {
     ],
   };
 
-  const entityManager = {};
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -72,7 +70,9 @@ describe('QuizService', () => {
         },
         {
           provide: EntityManager,
-          useValue: entityManager,
+          useValue: {
+            save: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -129,20 +129,13 @@ describe('QuizService', () => {
         'with empty options, question type is plain text question, ',
       async () => {
         const mockQuizPlainTextQuestion = structuredClone(mockQuiz);
-        const mockOptionPlainTextQuestion = {
-          id: 0,
-          option: 'Yes',
-          isCorrect: true,
-          question: this,
-        };
-
         mockQuizPlainTextQuestion.questions = [];
         mockQuizPlainTextQuestion.questions.push({
           id: 0,
           quiz: mockQuizPlainTextQuestion,
           questionType: QuestionType.PLAIN_TEXT_QUESTION,
           question: 'Is this working?',
-          options: [mockOptionPlainTextQuestion],
+          options: [{ id: 0, option: 'Yes', isCorrect: true, question: this }],
         });
 
         jest
@@ -369,9 +362,5 @@ describe('QuizService', () => {
         expect(result).toEqual(correctSubmission);
       },
     );
-  });
-
-  describe('createQuiz', () => {
-    it('should create ', () => {});
   });
 });
