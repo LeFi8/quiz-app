@@ -3,7 +3,7 @@ import { QuizService } from './quiz.service';
 import { Quiz } from './models/quiz.entity';
 import { QuestionType } from './models/question-type.enum';
 import { QuestionOption } from './models/question-option.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, QueryBuilder, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Question } from './models/question.entity';
 import { QuizSubmissionResults } from './models/DTO/quiz-submission-results';
@@ -51,6 +51,7 @@ describe('QuizService', () => {
             create: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
+            createQueryBuilder: jest.fn(),
           },
         },
         {
@@ -87,25 +88,38 @@ describe('QuizService', () => {
 
   describe('findAll', () => {
     it('should return an array of all quizzes', async () => {
-      jest
-        .spyOn(quizService, 'findAll')
-        .mockResolvedValue(Promise.resolve([mockQuiz]));
+      jest.spyOn(quizRepository, 'createQueryBuilder').mockReturnValue({
+        innerJoinAndSelect: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([mockQuiz]),
+      } as any);
 
       const result = await quizService.findAll();
-
       expect(result).toEqual([mockQuiz]);
     });
   });
 
   describe('findQuizByName', () => {
     it('should return a quiz', async () => {
-      jest
-        .spyOn(quizService, 'findQuizByName')
-        .mockResolvedValue(Promise.resolve(mockQuiz));
+      jest.spyOn(quizRepository, 'createQueryBuilder').mockReturnValue({
+        innerJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(mockQuiz),
+      } as any);
 
       const result = await quizService.findQuizByName(mockQuiz.quizName);
-
       expect(result).toBe(mockQuiz);
+    });
+
+    it("should throw a 'quiz not found' error", async () => {
+      jest.spyOn(quizRepository, 'createQueryBuilder').mockReturnValue({
+        innerJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(''),
+      } as any);
+
+      await expect(
+        quizService.findQuizByName(mockQuiz.quizName),
+      ).rejects.toThrow('No quiz found with given name.');
     });
   });
 
@@ -355,5 +369,9 @@ describe('QuizService', () => {
         expect(result).toEqual(correctSubmission);
       },
     );
+  });
+
+  describe('createQuiz', () => {
+    it('should create ', () => {});
   });
 });
