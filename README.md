@@ -3,71 +3,277 @@
 </p>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[circleci-url]: https://circleci.com/gh/nestjs/nest  
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Used tools and technologies
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- NestJS
+- GraphQL API
+- TypeScript 
+- PostreSQL with *Docker integration*
+- TypeORM
+- Jest
 
 ## Installation
 
 ```bash
+# Cloning the repository
+$ git clone https://github.com/LeFi8/quiz-app.git
+
+# From project path
 $ npm install
 ```
 
 ## Running the app
 
 ```bash
-# development
+# First initialize docker from the project path
+$ docker compose up -d
+
+# Then start 
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Features/How to
 
-## Stay in touch
+#### Create a quiz
+To create a new quiz, teachers need to provide: 
+- Name of the quiz
+- List of the questions
+	- The question
+	- Question type
+		- Single choice question
+		- Multi choice question
+		- Sorting question
+		- Plain text question
+	- List of options
+		- Option
+		- Whether the option is correct or not (by default its *false* if this field is not provided)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```graphql
+# Example of how can quiz creation query look like
+mutation {
+  createQuiz(createQuizInput: {
+    quizName: "Geography Knowledge Quiz"
+    questions: [
+      {
+        question: "What is the capital of Poland?"
+        questionType: SINGLE_CHOICE_QUESTION
+        options: [
+          { 
+            option: "London" 
+          },
+          { 
+            option: "Paris" 
+          },
+          { 
+            option: "Warsaw", 
+            isCorrect: true 
+          },
+          { 
+            option: "Madrid" 
+          },
+        ]
+      },
+      {
+        question: "Which continent is home to the Sahara Desert?"
+        questionType: SINGLE_CHOICE_QUESTION
+        options: [
+          { 
+            option: "Asia" 
+          },
+          { 
+            option: "Africa", 
+            isCorrect: true 
+          },
+          { 
+            option: "South America" 
+          },
+          { 
+            option: "Australia" 
+          },
+        ]
+      },
+      {
+        question: "Which countires are in Europe?"
+        questionType: MULTIPLE_CHOICE_QUESTION
+        options: [
+          { ,
+            option: "Spain", 
+            isCorrect: true 
+          },
+          { 
+            option: "South Korea"
+          },
+          { 
+            option: "Poland", 
+            isCorrect: true 
+          },
+          { 
+            option: "Germany", 
+            isCorrect: true 
+          }
+        ]
+      },
+      {
+        question: "Sort the following countries by their population in descending order:"
+        questionType: SORTING_QUESTION
+        options: [
+          { 
+            option: "China" 
+          },
+          { 
+            option: "India" 
+          },
+          { 
+            option: "United States" 
+          },
+          { 
+            option: "Poland" 
+          },
+        ]
+      },
+      {
+        question: "What is the capital of France?"
+        questionType: PLAIN_TEXT_QUESTION
+        options: [
+          { 
+            option: "Paris" 
+          }
+        ]
+      }
+    ]
+  }) {
+    quizName
+    questions {
+      question
+      questionType
+      options {
+        option
+        isCorrect
+      }
+    }
+  }
+}
 
-## License
 
-Nest is [MIT licensed](LICENSE).
+```
+
+#### Get list of quizzes
+
+```graphql
+# Just the name of quizzes
+{
+  quizzes {
+    quizName
+  }
+}
+
+# Quizzes with questions
+{
+  quizzes {
+    quizName
+    questions {
+      question
+    }
+  }
+}
+
+# Quizzes with questions and options
+{
+  quizzes {
+    quizName
+    questions {
+      question
+      options {
+        option
+        isCorrect
+      }
+    }
+  }
+}
+
+
+```
+
+#### Fetch a specific quiz
+
+When fetching a quiz as Student some fields may be returned as undifined, such as *isCorrect*, or *option* in Plain Text questions.
+
+```graphql
+# As teacher
+{
+  quiz(quizName: "Geography Knowledge Quiz", role: "TEACHER") {
+    quizName
+    questions {
+      question
+      questionType
+      options {
+        option
+        isCorrect
+      }
+    }
+  }
+}
+
+# As student
+{
+  quiz(quizName: "Geography Knowledge Quiz", role: "STUDENT") {
+    quizName
+    questions {
+      question
+      options {
+        option
+      }
+    }
+  }
+}
+```
+
+#### Submit answers to the quiz
+
+Answers to the questions *must be* in the same order as the fetched questions. 
+
+```graphql
+mutation {
+  submitQuizAnswers(answerInput: {
+    quizName: "Geography Knowledge Quiz"
+    questionAnswers: [
+      {
+        question: "What is the capital of Poland?"
+        answer: "Warsaw"
+      },
+      {
+        question: "Which continent is home to the Sahara Desert?"
+        answer: "Africa"
+      },
+      {
+        question: "Which countires are in Europe?"
+        answers: ["Spain", "Poland", "Germany"]
+      },
+      {
+        question: "Sort the following countries by their population in descending order:"
+        answers: ["China", "India", "United States", "Poland"]
+      },
+      {
+        question: "What is the capital of France?"
+        answer: "Paris"
+      }
+    ]
+  }) {
+    correctAnswers
+    totalQuestions
+    score
+  }
+}
+
+```
